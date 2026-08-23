@@ -1,0 +1,98 @@
+# Local development stack: `docker compose up`
+# App:      http://localhost:8000   (artisan serve)
+# Vite HMR: http://localhost:5173   (auto-detected by laravel-vite-plugin)
+# Mailpit:  http://localhost:8025   (all sent mail is captured here)
+# Postgres: localhost:5432          (user/pass: promptforge/secret)
+
+name: prompt-forge
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile.local
+        user: "${UID:-1000}:${GID:-1000}"
+        command: php artisan serve --host=0.0.0.0 --port=8000
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_ENV: local
+            APP_DEBUG: "true"
+            APP_URL: ${APP_URL:-http://localhost:${APP_HOST_PORT:-8000}}
+            DB_CONNECTION: pgsql
+            DB_HOST: postgres
+            DB_PORT: "5432"
+            DB_DATABASE: ${DB_DATABASE:-promptforge}
+            DB_USERNAME: ${DB_USERNAME:-promptforge}
+            DB_PASSWORD: ${DB_PASSWORD:-secret}
+            SESSION_DRIVER: database
+            CACHE_STORE: database
+            QUEUE_CONNECTION: database
+            MAIL_MAILER: smtp
+            MAIL_HOST: mailpit
+            MAIL_PORT: "1025"
+            RUN_MIGRATIONS: "true"
+            XDEBUG_MODE: debug
+        ports:
+            - "${APP_HOST_PORT:-8000}:8000"
+        volumes:
+            - .:/var/www/html
+        extra_hosts:
+            - "host.docker.internal:host-gateway" # xdebug back to IDE
+        depends_on:
+            postgres:
+                condition: service_healthy
+            mailpit:
+                condition: service_healthy
+
+    vite:
+        image: node:22-alpine
+        working_dir: /app
+        user: "${UID:-1000}:${GID:-1000}"
+        environment:
+            HOME: /tmp # uid 1000 cannot write /home/node
+            npm_config_cache: /tmp/.npm
+        command: sh -c "npm install --no-audit --no-fund && npm run dev -- --host 0.0.0.0"
+        volumes:
+            - .:/app
+            - node_modules:/app/node_modules # keeps container deps off the host
+        ports:
+            - "${VITE_HOST_PORT:-5173}:5173"
+        healthcheck:
+            test: ["CMD", "wget", "-qO-", "http://127.0.0.1:5173/@vite/client"]
+            interval: 10s
+            timeout: 5s
+            retries: 12
+            start_period: 30s
+
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: ${DB_DATABASE:-promptforge}
+            POSTGRES_USER: ${DB_USERNAME:-promptforge}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+        ports:
+            - "${DB_HOST_PORT:-5433}:5432" # host pg often owns 5432; override via DB_HOST_PORT
+        volumes:
+            - pgdata_local:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 3s
+            retries: 12
+            start_period: 10s
+
+    mailpit:
+        image: axllent/mailpit:v1.24
+        ports:
+            - "${MAILPIT_HOST_PORT:-8025}:8025" # web UI (SMTP stays on the internal network)
+        healthcheck:
+            test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8025/"]
+            interval: 10s
+            timeout: 3s
+            retries: 6
+
+volumes:
+    pgdata_local:
+    node_modules:

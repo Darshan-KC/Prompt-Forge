@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+
+# Development image: bind-mounted source + host-style tooling.
+# Runs as your host user (see compose `user:`) so files created in the
+# container are not owned by root on the host.
+
+FROM php:8.3-fpm-alpine AS dev
+
+RUN apk add --no-cache bash git unzip tzdata
+
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions mbstring pdo_pgsql bcmath pcntl opcache @composer xdebug
+
+COPY docker/php/local.ini $PHP_INI_DIR/conf.d/99-app.ini
+COPY docker/php/opcache.local.ini $PHP_INI_DIR/conf.d/99-opcache.ini
+
+WORKDIR /var/www/html

@@ -1,0 +1,181 @@
+# Production stack:
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Requires a .env next to this file (or exported env vars) providing at
+# minimum APP_KEY and DB_PASSWORD; everything else has safe defaults.
+# Postgres is NOT published to the host — access it only via the app network.
+
+name: prompt-forge
+
+services:
+    app:
+        image: prompt-forge:latest
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_ENV: production
+            APP_DEBUG: "false"
+            APP_URL: ${APP_URL:-http://localhost}
+            DB_CONNECTION: pgsql
+            DB_HOST: postgres
+            DB_PORT: "5432"
+            DB_DATABASE: ${DB_DATABASE:-promptforge}
+            DB_USERNAME: ${DB_USERNAME:-promptforge}
+            DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD (and APP_KEY) in .env}
+            SESSION_DRIVER: database
+            CACHE_STORE: database
+            QUEUE_CONNECTION: database
+            LOG_CHANNEL: stderr
+            RUN_MIGRATIONS: "true"
+            # TRUSTED_PROXIES: "*" # uncomment when terminating TLS upstream
+        volumes:
+            - storage_prod:/var/www/html/storage # persistent user uploads
+        networks:
+            - backend
+        restart: unless-stopped
+        logging: &default_logging
+            driver: json-file
+            options:
+                max-size: 10m
+                max-file: 3
+        healthcheck:
+            test: ["CMD", "php", "/opt/healthcheck.php"]
+            interval: 15s
+            timeout: 5s
+            retries: 5
+            start_period: 90s # covers first-boot migrations
+
+    # One-shot: copies public assets (build output, favicon, storage symlink)
+    # into a volume so nginx can serve static files without carrying sources.
+    assets-init:
+        image: prompt-forge:latest
+        user: "0:0"
+        environment:
+            SKIP_PRIVILEGE_DROP: "true" # needs root to write into the volume
+        command: sh -c "cp -a /var/www/html/public/. /srv/public/"
+        volumes:
+            - public_prod:/srv/public
+        restart: "no"
+
+    nginx:
+        image: nginx:1.27-alpine
+        ports:
+            - "${HTTP_PORT:-80}:80"
+        volumes:
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+            - public_prod:/var/www/html/public:ro
+            - storage_prod:/var/www/html/storage:ro # serves /storage uploads
+        networks:
+            - frontend
+            - backend
+        restart: unless-stopped
+        logging: *default_logging
+        depends_on:
+            assets-init:
+                condition: service_completed_successfully
+            app:
+                condition: service_healthy # /up works before traffic flows
+        healthcheck:
+            test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/up >/dev/null || exit 1"]
+            interval: 15s
+            timeout: 5s
+            retries: 5
+            start_period: 20s
+
+    queue:
+        image: prompt-forge:latest # same optimized image, different command
+        command: php artisan queue:work --sleep=1 --tries=3 --backoff=5 --max-time=3600
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_ENV: production
+            APP_DEBUG: "false"
+            DB_CONNECTION: pgsql
+            DB_HOST: postgres
+            DB_PORT: "5432"
+            DB_DATABASE: ${DB_DATABASE:-promptforge}
+            DB_USERNAME: ${DB_USERNAME:-promptforge}
+            DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD (and APP_KEY) in .env}
+            CACHE_STORE: database
+            QUEUE_CONNECTION: database
+            LOG_CHANNEL: stderr
+        networks:
+            - backend
+        restart: unless-stopped
+        logging: *default_logging
+        depends_on:
+            app:
+                condition: service_healthy # migrations finished first
+        healthcheck:
+            test: ["CMD-SHELL", "php artisan queue:monitor database:default --max=250"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+            start_period: 30s
+
+    scheduler:
+        image: prompt-forge:latest
+        command: php artisan schedule:work
+        env_file:
+            - path: .env
+              required: false
+        environment:
+            APP_ENV: production
+            APP_DEBUG: "false"
+            DB_CONNECTION: pgsql
+            DB_HOST: postgres
+            DB_PORT: "5432"
+            DB_DATABASE: ${DB_DATABASE:-promptforge}
+            DB_USERNAME: ${DB_USERNAME:-promptforge}
+            DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD (and APP_KEY) in .env}
+            CACHE_STORE: database
+            QUEUE_CONNECTION: database
+            LOG_CHANNEL: stderr
+        networks:
+            - backend
+        restart: unless-stopped
+        logging: *default_logging
+        depends_on:
+            app:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD-SHELL", "pgrep -f 'schedule:work' >/dev/null || exit 1"]
+            interval: 30s
+            timeout: 5s
+            retries: 5
+
+    postgres:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_DB: ${DB_DATABASE:-promptforge}
+            POSTGRES_USER: ${DB_USERNAME:-promptforge}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+        volumes:
+            - pgdata_prod:/var/lib/postgresql/data
+        networks:
+            - backend
+        restart: unless-stopped
+        logging: *default_logging
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 10s
+            timeout: 3s
+            retries: 12
+            start_period: 20s
+
+networks:
+    frontend:
+    backend:
+        # Not `internal` on purpose: the app calls external APIs.
+        # Postgres is isolated by having no published ports instead.
+
+
+volumes:
+    pgdata_prod:
+    storage_prod:
+    public_prod:

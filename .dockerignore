@@ -1,0 +1,36 @@
+# VCS & CI
+.git
+.github
+.gitignore
+.gitattributes
+.styleci.yml
+
+# Dependencies (installed inside image / bind-mounted in dev)
+node_modules
+vendor
+
+# Build output (built in dedicated stage)
+public/build
+public/hot
+
+# Secrets & local env files
+.env
+.env.*
+!.env.example
+
+# Local databases & runtime state
+database/database.sqlite
+database/database.sqlite-journal
+storage/*.key
+storage/app/**
+storage/framework/cache/**
+storage/framework/sessions/**
+storage/framework/testing/**
+storage/framework/views/**
+storage/logs/**
+
+# Tests & tooling (dev runs from bind mount, not this image)
+tests
+phpunit.xml
+.dockerignore
+docker-compose*.yml
