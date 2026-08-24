@@ -1,17 +1,43 @@
-# syntax=docker/dockerfile:1
-
-# Development image: bind-mounted source + host-style tooling.
-# Runs as your host user (see compose `user:`) so files created in the
-# container are not owned by root on the host.
+# =============================================================================
+# LOCAL DEVELOPMENT IMAGE — PHP 8.3 + Xdebug + composer
+# =============================================================================
+# Used by the `app` service in docker-compose.yml.
+#
+# Deliberately DIFFERENT from the production image:
+#   - source code is NOT copied in; it arrives via bind mount at runtime, so
+#     every host edit is instantly visible without rebuilding
+#   - composer IS included (adding/require packages interactively)
+#   - Xdebug is installed for step-debugging (activated via XDEBUG_MODE env)
+#   - no asset build stage: the separate `vite` compose service handles JS/CSS
+# =============================================================================
 
 FROM php:8.3-fpm-alpine AS dev
 
+# bash         nicer interactive shells (`docker compose exec app bash`)
+# git          composer needs it for some dev/vcs packages
+# unzip        composer archive extraction fallback
+# tzdata       correct timestamps when TZ is set
 RUN apk add --no-cache bash git unzip tzdata
 
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+# Same extension set as production (parity!) PLUS:
+# @composer   convenience alias the installer expands to the latest composer
+# xdebug      step debugger — OFF by default; docker-compose.yml sets
+#             XDEBUG_MODE=debug to switch it on per environment
 RUN install-php-extensions mbstring pdo_pgsql bcmath pcntl opcache @composer xdebug
 
+# Dev php settings: generous limits, display_errors=On, Xdebug client config
+# lives here too (activated only when XDEBUG_MODE says so).
 COPY docker/php/local.ini $PHP_INI_DIR/conf.d/99-app.ini
 COPY docker/php/opcache.local.ini $PHP_INI_DIR/conf.d/99-opcache.ini
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+
+RUN chmod +x /usr/local/bin/entrypoint
+
 WORKDIR /var/www/html
+
+# Same entrypoint contract as production: prepares storage dirs, keys,
+# .env.container, migrations... then exec's the compose `command`.
+ENTRYPOINT ["entrypoint"]

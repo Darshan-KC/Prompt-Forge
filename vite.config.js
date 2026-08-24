@@ -17,6 +17,9 @@ export default defineConfig({
         tailwindcss(),
     ],
     server: {
+        // Docker: the container binds 0.0.0.0 but browsers must reach Vite
+        // through the published host port (see VITE_ORIGIN in compose).
+        origin: process.env.VITE_ORIGIN ?? 'http://localhost:5173',
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

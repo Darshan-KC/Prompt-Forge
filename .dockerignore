@@ -1,35 +1,61 @@
-# VCS & CI
-.git
+# =============================================================================
+# .dockerignore — filters what `docker build` sends as build context
+# =============================================================================
+# Works like .gitignore but for image builds. Two distinct purposes here:
+#
+#   1. CORRECTNESS — some files MUST NOT enter the production image:
+#      secrets (.env), local databases, tests. The prod image should contain
+#      exactly what the application needs to run, nothing else.
+#
+#   2. SPEED — the context is tarred and sent to the Docker daemon on every
+#     build; excluding vendor/ (thousands of files) and .git keeps uploads and
+#     cache-invalidations fast. Dependencies are installed INSIDE dedicated
+#     build stages (see docker/php/Dockerfile) or bind-mounted in dev.
+#
+# NOTE: this does NOT affect runtime bind mounts (local dev mounts the whole
+# repo regardless) — only what's visible during `docker build`.
+# =============================================================================
+
+# --- VCS & CI -----------------------------------------------------------------
+.git               # biggest context offender: full history
 .github
-.gitignore
+.gitignore         # irrelevant inside images
 .gitattributes
 .styleci.yml
 
-# Dependencies (installed inside image / bind-mounted in dev)
+# --- Dependencies --------------------------------------------------------------
+# Installed inside dedicated build stages (composer:2 / node:22 stages);
+# shipping host-built versions would risk platform mismatches (glibc/musl).
 node_modules
 vendor
 
-# Build output (built in dedicated stage)
-public/build
-public/hot
+# --- Build output ---------------------------------------------------------------
+# Recreated in the "assets" stage; host copies may be stale/half-written.
+public/build       # compiled vite assets
+public/hot         # marker file of the Vite DEV server — must never reach prod!
 
-# Secrets & local env files
+# --- Secrets & environment -------------------------------------------------------
+# CRITICAL: .env contains APP_KEY + credentials. Images are often pushed to
+# registries — a leaked key is a compromised system. Only the sanitized
+# .env.example template is allowed through.
 .env
 .env.*
 !.env.example
 
-# Local databases & runtime state
-database/database.sqlite
+# --- Local state ---------------------------------------------------------------
+database/database.sqlite          # legacy/local SQLite file
 database/database.sqlite-journal
-storage/*.key
-storage/app/**
-storage/framework/cache/**
+storage/*.key                     # OAuth signing keys
+storage/app/**                    # user uploads belong in volumes, not images
+storage/framework/cache/**        # runtime caches are rebuilt at boot
 storage/framework/sessions/**
 storage/framework/testing/**
-storage/framework/views/**
+storage/framework/views/**        # compiled blades — regenerated on demand
 storage/logs/**
 
-# Tests & tooling (dev runs from bind mount, not this image)
+# --- Tests & tooling -------------------------------------------------------------
+# Production images don't run phpunit; local dev uses the bind mount which is
+# unaffected by this file. Excluding them shrinks context & attack surface.
 tests
 phpunit.xml
 .dockerignore
