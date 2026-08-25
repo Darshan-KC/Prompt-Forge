@@ -6,3 +6,5 @@ use Illuminate\Support\Facades\Route;
 // and `php artisan optimize` (run by the production entrypoint on boot)
 // fails hard on them. Static view routes are cacheable and identical here.
 Route::view('/', 'welcome');
+
+Route::view('/home', 'home')->middleware('auth')->name('home');
