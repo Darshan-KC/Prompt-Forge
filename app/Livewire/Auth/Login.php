@@ -3,6 +3,7 @@
 namespace App\Livewire\Auth;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Livewire\Component;
 
 class Login extends Component
@@ -11,7 +12,7 @@ class Login extends Component
     public string $password = '';
     public bool $remember = false;
 
-    public function mount(): void
+    public function mount()
     {
         if (Auth::check()) {
             return redirect()->intended(route('home'));
@@ -40,6 +41,6 @@ class Login extends Component
 
     public function render()
     {
-        return view('livewire.auth.login')->layout('components.layouts.guest');
+        return view('livewire.auth.login');
     }
 }
