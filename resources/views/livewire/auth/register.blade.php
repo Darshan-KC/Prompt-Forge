@@ -1,94 +1,76 @@
-<div>
-    <form wire:submit="register">
-        <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Name') }}
-            </label>
-            <input
+<div class="space-y-5">
+    <form wire:submit="register" class="space-y-5">
+        <flux:field>
+            <flux:label>Name</flux:label>
+            <flux:input
                 wire:model="name"
-                id="name"
                 type="text"
                 name="name"
-                required
                 autofocus
                 autocomplete="name"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('name')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
+                placeholder="Ada Lovelace"
+            />
+            <flux:error name="name" />
+        </flux:field>
 
-        <div class="mt-4">
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Email') }}
-            </label>
-            <input
+        <flux:field>
+            <flux:label>Email</flux:label>
+            <flux:input
                 wire:model="email"
-                id="email"
                 type="email"
                 name="email"
-                required
                 autocomplete="username"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('email')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
+                placeholder="you@example.com"
+            />
+            <flux:error name="email" />
+        </flux:field>
 
-        <div class="mt-4">
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Password') }}
-            </label>
-            <input
-                wire:model="password"
-                id="password"
-                type="password"
-                name="password"
-                required
-                autocomplete="new-password"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('password')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
+        <flux:field>
+            <flux:label>Password</flux:label>
+            <div class="relative w-full" x-data="{ show: false }">
+                <flux:input
+                    wire:model="password"
+                    x-bind:type="show ? 'text' : 'password'"
+                    name="password"
+                    autocomplete="new-password"
+                    placeholder="At least 8 characters"
+                />
+                <button
+                    type="button"
+                    class="absolute end-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-400 transition hover:text-zinc-600 dark:hover:text-zinc-200"
+                    x-on:click="show = !show"
+                    x-bind:aria-label="show ? 'Hide password' : 'Show password'"
+                    tabindex="-1"
+                >
+                    <flux:icon x-cloak x-show="!show" icon="eye" class="size-4" />
+                    <flux:icon x-cloak x-show="show" icon="eye-slash" class="size-4" />
+                </button>
+            </div>
+            <flux:error name="password" />
+        </flux:field>
 
-        <div class="mt-4">
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Confirm Password') }}
-            </label>
-            <input
+        <flux:field>
+            <flux:label>Confirm password</flux:label>
+            <flux:input
                 wire:model="password_confirmation"
-                id="password_confirmation"
                 type="password"
                 name="password_confirmation"
-                required
                 autocomplete="new-password"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('password_confirmation')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
+                placeholder="Repeat your password"
+            />
+            <flux:error name="password_confirmation" />
+        </flux:field>
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('login'))
-                <a
-                    href="{{ route('login') }}"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    {{ __('Already registered?') }}
-                </a>
-            @endif
+        <flux:button variant="primary" type="submit" class="w-full justify-center" wire:loading.attr="disabled" wire:target="register">
+            <span wire:loading.remove wire:target="register">Create account</span>
+            <span wire:loading wire:target="register" class="inline-flex items-center gap-2">
+                <flux:icon.arrow-path class="size-4 animate-spin" />
+                Creating account…
+            </span>
+        </flux:button>
 
-            <button
-                type="submit"
-                class="ms-3 inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-            >
-                {{ __('Register') }}
-            </button>
-        </div>
+        <p class="text-center text-xs leading-relaxed text-zinc-400 dark:text-zinc-500">
+            By creating an account you agree to our Terms of Service and Privacy Policy.
+        </p>
     </form>
 </div>

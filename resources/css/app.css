@@ -1,9 +1,161 @@
 @import 'tailwindcss';
+@import '../../vendor/livewire/flux/dist/flux.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/*
+|--------------------------------------------------------------------------
+| Dark mode strategy
+|--------------------------------------------------------------------------
+| Flux and the Prompt-Forge design system respond to the `dark` class
+| placed on the root <html> element. See layouts and theme-toggle.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+|--------------------------------------------------------------------------
+| Design tokens
+|--------------------------------------------------------------------------
+| Prompt-Forge visual identity: "steel & ember". Cool zinc surfaces carry a
+| warm ember accent derived from the forge/building metaphor.
+*/
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+        'Courier New', monospace;
+
+    --color-brand-50: #fff9f4;
+    --color-brand-100: #ffefdf;
+    --color-brand-200: #ffdcba;
+    --color-brand-300: #ffc08a;
+    --color-brand-400: #ff9650;
+    --color-brand-500: #fb7523;
+    --color-brand-600: #ec5d12;
+    --color-brand-700: #c44710;
+    --color-brand-800: #9c3a12;
+    --color-brand-900: #7e3212;
+    --color-brand-950: #441504;
+
+    --animate-fade-in: fade-in 0.2s ease-out both;
+    --animate-scale-in: scale-in 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    --animate-shimmer: shimmer 1.6s linear infinite;
+    --animate-caret: caret-blink 0.9s step-end infinite;
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes scale-in {
+        from {
+            opacity: 0;
+            transform: scale(0.97) translateY(-2px);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    @keyframes shimmer {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(100%);
+        }
+    }
+
+    @keyframes caret-blink {
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0;
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Flux theme overrides
+|--------------------------------------------------------------------------
+| Flux components read accent tokens at runtime, so overriding the variables
+| (after the flux.css import) retints every Flux primitive.
+*/
+
+@layer theme {
+    :root {
+        --color-accent: var(--color-brand-700);
+        --color-accent-content: var(--color-brand-700);
+        --color-accent-foreground: var(--color-white);
+    }
+
+    .dark {
+        --color-accent: var(--color-brand-500);
+        --color-accent-content: var(--color-brand-400);
+        --color-accent-foreground: var(--color-brand-950);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| Base
+|--------------------------------------------------------------------------
+*/
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100;
+        text-rendering: optimizeLegibility;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    ::selection {
+        @apply bg-brand-200 text-brand-950 dark:bg-brand-800/60 dark:text-brand-50;
+    }
+
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-zinc-300) transparent;
+    }
+
+    .dark * {
+        scrollbar-color: var(--color-zinc-700) transparent;
+    }
+
+    *::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        border-radius: 9999px;
+        background: var(--color-zinc-300);
+    }
+
+    .dark *::-webkit-scrollbar-thumb {
+        background: var(--color-zinc-700);
+    }
+
+    :focus-visible {
+        /* Keep Flux + Tailwind rings, but guarantee visibility on custom elements. */
+        outline: none;
+    }
 }

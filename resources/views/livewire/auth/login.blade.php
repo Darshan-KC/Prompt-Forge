@@ -1,77 +1,72 @@
-<div>
+<div class="space-y-5">
     @if (session('status'))
-        <div class="mb-4 font-medium text-sm text-green-600 dark:text-green-400">
-            {{ session('status') }}
+        <div class="flex items-start gap-2.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3.5 py-2.5 text-sm text-emerald-700 dark:text-emerald-300">
+            <flux:icon.check-circle class="mt-0.5 size-4 shrink-0" />
+            <span>{{ __($statusKey ?? 'auth.failed') }}</span>
         </div>
     @endif
 
-    <form wire:submit="login">
-        <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Email') }}
-            </label>
-            <input
+    <form wire:submit="login" class="space-y-5">
+        <flux:field>
+            <flux:label>Email</flux:label>
+            <flux:input
                 wire:model="email"
-                id="email"
                 type="email"
                 name="email"
-                required
                 autofocus
                 autocomplete="username"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('email')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
+                placeholder="you@example.com"
+            />
+            <flux:error name="email" />
+        </flux:field>
 
-        <div class="mt-4">
-            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                {{ __('Password') }}
-            </label>
-            <input
-                wire:model="password"
-                id="password"
-                type="password"
-                name="password"
-                required
-                autocomplete="current-password"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
-            >
-            @error('password')
-                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div class="block mt-4">
-            <label for="remember" class="inline-flex items-center">
-                <input
-                    wire:model="remember"
-                    id="remember"
-                    type="checkbox"
-                    name="remember"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+        <flux:field>
+            <flux:label>Password</flux:label>
+            <div class="relative w-full" x-data="{ show: false }">
+                <flux:input
+                    x-ref="password"
+                    wire:model="password"
+                    x-bind:type="show ? 'text' : 'password'"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                />
+                <button
+                    type="button"
+                    class="absolute end-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-400 transition hover:text-zinc-600 dark:hover:text-zinc-200"
+                    x-on:click="show = !show"
+                    x-bind:aria-label="show ? 'Hide password' : 'Show password'"
+                    tabindex="-1"
                 >
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+                    <flux:icon x-cloak x-show="!show" icon="eye" class="size-4" />
+                    <flux:icon x-cloak x-show="show" icon="eye-slash" class="size-4" />
+                </button>
+            </div>
+            <flux:error name="password" />
+        </flux:field>
 
-        <div class="flex items-center justify-end mt-4">
+        <div class="flex items-center justify-between gap-4">
+            <flux:checkbox wire:model="remember" label="Remember me" />
             @if (Route::has('password.request'))
-                <a
-                    href="{{ route('password.request') }}"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    {{ __('Forgot your password?') }}
-                </a>
+                <flux:link href="{{ route('password.request') }}" variant="subtle" class="text-sm">Forgot password?</flux:link>
             @endif
-
-            <button
-                type="submit"
-                class="ms-3 inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-            >
-                {{ __('Log in') }}
-            </button>
         </div>
+
+        <flux:button variant="primary" type="submit" class="w-full justify-center" wire:loading.attr="disabled" wire:target="login">
+            <span wire:loading.remove wire:target="login">Log in</span>
+            <span wire:loading wire:target="login" class="inline-flex items-center gap-2">
+                <flux:icon.arrow-path class="size-4 animate-spin" />
+                Logging in…
+            </span>
+        </flux:button>
     </form>
+
+    <div class="relative">
+        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+            <div class="w-full border-t border-zinc-200 dark:border-white/10"></div>
+        </div>
+        <div class="relative flex justify-center">
+            <span class="bg-white px-3 text-xs font-medium uppercase tracking-wider text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500">Secure sign in</span>
+        </div>
+    </div>
 </div>
