@@ -14,7 +14,7 @@
         <div class="divide-y divide-zinc-100 dark:divide-white/5">
             @foreach ([
                 'runs' => ['Run status', 'When a run completes, errors or gets rate limited', 'bolt'],
-                'versions' => ['Version activity', 'When others save or restore a prompt version', 'layers'],
+                'versions' => ['Version activity', 'When others save or restore a prompt version', 'rectangle-stack'],
                 'team' => ['Team activity', 'Members joining or changing projects', 'users'],
                 'billing' => ['Billing & limits', 'Usage thresholds, invoices and payment failures', 'credit-card'],
             ] as $key => [$label, $desc, $icon])

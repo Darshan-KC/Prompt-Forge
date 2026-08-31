@@ -45,7 +45,7 @@
                         :class="favs
                             ? 'border-amber-400/50 bg-amber-500/10 text-amber-700 ring-1 ring-amber-400/30 dark:text-amber-300'
                             : 'border-zinc-200 bg-white text-zinc-600 shadow-xs dark:border-white/10 dark:bg-zinc-900/60 dark:text-zinc-400'">
-                        <flux:icon.star class="size-3.5" x-bind:variant="favs ? 'solid' : 'outline'" :class="favs ? 'text-amber-500' : ''" />
+                        <flux:icon.star class="size-3.5" x-bind:variant="favs ? 'solid' : 'outline'" x-bind:class="favs ? 'text-amber-500' : ''" />
                         Favorites
                         <span class="rounded-full px-1.5 text-xs tabular-nums" :class="favs ? 'bg-amber-500/20' : 'bg-zinc-100 dark:bg-white/10'">{{ $favoriteCount }}</span>
                     </button>

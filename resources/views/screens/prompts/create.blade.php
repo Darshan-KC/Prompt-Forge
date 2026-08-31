@@ -145,7 +145,7 @@
                     <flux:field>
                         <flux:label>Message</flux:label>
                         <flux:textarea x-ref="message" x-model="message" rows="8" class="font-mono text-sm leading-relaxed"
-                            placeholder="Wrap dynamic values in {{ '{{' }}curly braces{{ '}}' }} — they become variables you can declare below…" />
+                            placeholder="Wrap dynamic values in &#123;&#123;curly braces&#125;&#125; — they become variables you can declare below..." />
                     </flux:field>
 
                     <div class="flex flex-wrap items-center gap-1.5" x-show="variables.length > 0" x-cloak>

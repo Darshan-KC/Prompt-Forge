@@ -8,7 +8,7 @@
         'Marketing' => 'bg-amber-500/10 text-amber-700 dark:bg-amber-400/10 dark:text-amber-300',
         'Education' => 'bg-rose-500/10 text-rose-700 dark:bg-rose-400/10 dark:text-rose-300',
         'Data Analysis' => 'bg-cyan-500/10 text-cyan-700 dark:bg-cyan-400/10 dark:text-cyan-300',
-        default => 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-400/10 dark:text-zinc-300',
+        'default' => 'bg-zinc-500/10 text-zinc-600 dark:bg-zinc-400/10 dark:text-zinc-300',
     ];
     $tone = $categoryTones[$prompt['category']] ?? $categoryTones['default'];
 @endphp

@@ -144,7 +144,21 @@ class MockData
 
     public static function analytics(): array
     {
-        return static::load('analytics');
+        $data = static::load('analytics');
+
+        $providerColors = collect(static::providers())
+            ->pluck('color', 'slug')
+            ->all();
+
+        $data['providerUsage'] = array_map(
+            fn (array $usage) => [
+                ...$usage,
+                'color' => $providerColors[$usage['provider']] ?? '#71717a',
+            ],
+            $data['providerUsage']
+        );
+
+        return $data;
     }
 
     public static function dashboard(): array

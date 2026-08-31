@@ -1,26 +1,27 @@
+@php
+    $features = [
+        ['icon' => 'pencil-square', 'title' => 'A real prompt editor', 'body' => 'System and user instructions, variables, temperature, max tokens — structured like a serious engineering artifact, not a chat box.'],
+        ['icon' => 'variable', 'title' => 'Variables, not one-offs', 'body' => 'Declare {{variables}} once, swap values anytime. Reuse the same prompt across audiences, codebases and languages.'],
+        ['icon' => 'arrows-right-left', 'title' => 'Compare every model', 'body' => 'Run one prompt across GPT, Claude, Gemini and more, side by side. See tokens, latency and cost before you commit.'],
+        ['icon' => 'clock', 'title' => 'Version everything', 'body' => 'Every tweak is a version. Restore, diff, and iterate without losing the experiment that got you there.'],
+        ['icon' => 'squares-2x2', 'title' => 'Organize your library', 'body' => 'Folders, tags, projects and favorites. Your prompt library scales past the first hundred without collapsing.'],
+        ['icon' => 'chart-bar', 'title' => 'Know what it costs', 'body' => 'Per-run token, latency and cost telemetry — and analytics that show which prompts earn their keep.'],
+    ];
+
+    $steps = [
+        ['step' => '01', 'title' => 'Write', 'body' => 'Draft system instructions and a prompt with variables in a focused editor.'],
+        ['step' => '02', 'title' => 'Run & compare', 'body' => 'Fire it against any model. Watch token, latency and cost as it streams.'],
+        ['step' => '03', 'title' => 'Iterate & ship', 'body' => 'Save versions, diff what changed, and reuse proven prompts everywhere.'],
+    ];
+
+    $plans = [
+        ['name' => 'Starter', 'price' => '$0', 'period' => '/month', 'tag' => null, 'features' => ['25 runs / day', '2 providers', 'Community support', '1 project'], 'cta' => 'Start for free', 'highlight' => false],
+        ['name' => 'Pro', 'price' => '$19', 'period' => '/month', 'tag' => 'Most popular', 'features' => ['Unlimited runs', 'All providers & models', 'Version history + diffs', 'Unlimited projects', 'Priority support'], 'cta' => 'Go Pro', 'highlight' => true],
+        ['name' => 'Team', 'price' => '$49', 'period' => '/month', 'tag' => null, 'features' => ['Everything in Pro', 'Shared prompt libraries', 'Usage & cost analytics', 'SSO (coming soon)'], 'cta' => 'Contact sales', 'highlight' => false],
+    ];
+@endphp
+
 <x-layouts.guest title="Prompt-Forge — The professional AI prompt engineering workspace">
-    @php
-        $features = [
-            ['icon' => 'pencil-square', 'title' => 'A real prompt editor', 'body' => 'System and user instructions, variables, temperature, max tokens — structured like a serious engineering artifact, not a chat box.'],
-            ['icon' => 'variable', 'title' => 'Variables, not one-offs', 'body' => 'Declare {{variables}} once, swap values anytime. Reuse the same prompt across audiences, codebases and languages.'],
-            ['icon' => 'arrows-right-left', 'title' => 'Compare every model', 'body' => 'Run one prompt across GPT, Claude, Gemini and more, side by side. See tokens, latency and cost before you commit.'],
-            ['icon' => 'clock', 'title' => 'Version everything', 'body' => 'Every tweak is a version. Restore, diff, and iterate without losing the experiment that got you there.'],
-            ['icon' => 'squares-2x2', 'title' => 'Organize your library', 'body' => 'Folders, tags, projects and favorites. Your prompt library scales past the first hundred without collapsing.'],
-            ['icon' => 'chart-bar', 'title' => 'Know what it costs', 'body' => 'Per-run token, latency and cost telemetry — and analytics that show which prompts earn their keep.'],
-        ];
-
-        $steps = [
-            ['step' => '01', 'title' => 'Write', 'body' => 'Draft system instructions and a prompt with variables in a focused editor.'],
-            ['step' => '02', 'title' => 'Run & compare', 'body' => 'Fire it against any model. Watch token, latency and cost as it streams.'],
-            ['step' => '03', 'title' => 'Iterate & ship', 'body' => 'Save versions, diff what changed, and reuse proven prompts everywhere.'],
-        ];
-
-        $plans = [
-            ['name' => 'Starter', 'price' => '$0', 'period' => '/month', 'tag' => null, 'features' => ['25 runs / day', '2 providers', 'Community support', '1 project'], 'cta' => 'Start for free', 'highlight' => false],
-            ['name' => 'Pro', 'price' => '$19', 'period' => '/month', 'tag' => 'Most popular', 'features' => ['Unlimited runs', 'All providers & models', 'Version history + diffs', 'Unlimited projects', 'Priority support'], 'cta' => 'Go Pro', 'highlight' => true],
-            ['name' => 'Team', 'price' => '$49', 'period' => '/month', 'tag' => null, 'features' => ['Everything in Pro', 'Shared prompt libraries', 'Usage & cost analytics', 'SSO (coming soon)'], 'cta' => 'Contact sales', 'highlight' => false],
-        ];
-    @endphp
 
     {{-- Hero --}}
     <section class="relative overflow-hidden border-b border-zinc-200/80 dark:border-white/10">
@@ -48,10 +49,10 @@
             </p>
 
             <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <flux:button variant="primary" size="lg" href="{{ route('register') }}" wire:navigate icon:trailing="arrow-right">
+                <flux:button variant="primary" size="base" class="h-11 px-8 text-base" href="{{ route('register') }}" wire:navigate icon:trailing="arrow-right">
                     Start building — it's free
                 </flux:button>
-                <flux:button variant="subtle" size="lg" href="{{ route('login') }}" wire:navigate>
+                <flux:button variant="subtle" size="base" class="h-11 px-8 text-base" href="{{ route('login') }}" wire:navigate>
                     Log in to your workspace
                 </flux:button>
             </div>
@@ -102,7 +103,7 @@
                         <div class="mt-2 space-y-1.5">
                             <div class="h-2 w-10/12 rounded bg-zinc-100 dark:bg-white/10"></div>
                             <div class="flex gap-1.5">
-                                <span class="rounded bg-brand-500/10 px-1.5 py-0.5 font-mono text-[0.6rem] text-brand-700 dark:text-brand-300">{{ '{{' }}topic{{ '}}' }}</span>
+                                <span class="rounded bg-brand-500/10 px-1.5 py-0.5 font-mono text-[0.6rem] text-brand-700 dark:text-brand-300">&#123;&#123;topic&#125;&#125;</span>
                                 <span class="h-2 w-24 self-center rounded bg-zinc-100 dark:bg-white/10"></span>
                             </div>
                         </div>
@@ -234,7 +235,7 @@
                     <h2 class="text-2xl font-semibold tracking-tight text-white sm:text-3xl">Your best prompt deserves a proper workshop.</h2>
                     <p class="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-400">Sign up in under a minute and run your first side-by-side model comparison today.</p>
                     <div class="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <flux:button variant="primary" size="lg" href="{{ route('register') }}" wire:navigate icon:trailing="arrow-right">Create your workspace</flux:button>
+                        <flux:button variant="primary" size="base" class="h-11 px-8 text-base" href="{{ route('register') }}" wire:navigate icon:trailing="arrow-right">Create your workspace</flux:button>
                         <flux:link href="{{ route('login') }}" class="text-zinc-300">Already have an account?</flux:link>
                     </div>
                 </div>

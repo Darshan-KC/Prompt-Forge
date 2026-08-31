@@ -71,7 +71,7 @@
                                 <label class="text-xs font-medium text-zinc-400" for="pf-prompt">User message</label>
                                 <textarea id="pf-prompt" x-ref="promptField" x-model="promptText"
                                     class="mt-2 block min-h-[240px] w-full resize-y rounded-lg border-0 bg-zinc-50 px-3.5 py-3 font-mono text-sm leading-relaxed text-zinc-800 ring-1 ring-inset ring-zinc-200 transition placeholder:text-zinc-400 focus:ring-2 focus:ring-brand-500/60 dark:bg-zinc-950/40 dark:text-zinc-200 dark:ring-white/10 dark:focus:ring-brand-400/60"
-                                    placeholder="Write your prompt here. Wrap dynamic values in {{ '{{' }} curly braces {{ '}}' }} — they become variables..."></textarea>
+                                    placeholder="Write your prompt here. Wrap dynamic values in &#123;&#123; curly braces &#125;&#125; — they become variables..."></textarea>
                             </div>
                         </template>
 
@@ -292,7 +292,7 @@
                     <div class="space-y-3 p-4 sm:p-5">
                         <template x-if="variables.length === 0">
                             <div class="rounded-lg border border-dashed border-zinc-300 px-4 py-6 text-center dark:border-white/15">
-                                <p class="text-xs text-zinc-400 dark:text-zinc-500">No variables yet. Wrap text in {{ '{{' }}braces{{ '}}' }} in your message, or add one here.</p>
+                                <p class="text-xs text-zinc-400 dark:text-zinc-500">No variables yet. Wrap text in &#123;&#123;braces&#125;&#125; in your message, or add one here.</p>
                                 <flux:button variant="subtle" size="sm" icon="plus" class="mt-3" x-on:click="showAddVariable = true">Add variable</flux:button>
                             </div>
                         </template>

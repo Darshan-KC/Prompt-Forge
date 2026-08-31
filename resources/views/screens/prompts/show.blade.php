@@ -51,7 +51,7 @@
                 <button type="button" x-on:click="fav = !fav"
                     class="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 text-xs font-medium transition"
                     :class="fav ? 'text-amber-600 dark:text-amber-400' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
-                    <flux:icon.star class="size-3.5" x-bind:variant="fav ? 'solid' : 'outline'" :class="fav ? 'text-amber-500' : ''" />
+                    <flux:icon.star class="size-3.5" x-bind:variant="fav ? 'solid' : 'outline'" x-bind:class="fav ? 'text-amber-500' : ''" />
                     <span x-text="fav ? 'Starred' : 'Star'"></span>
                 </button>
             </div>
@@ -88,7 +88,7 @@
                                 @foreach ($promptData['variables'] as $variable)
                                     <div class="rounded-lg border border-zinc-200 p-3 dark:border-white/10">
                                         <div class="flex items-center justify-between gap-2">
-                                            <span class="font-mono text-[0.7rem] font-medium text-brand-600 dark:text-brand-400">{{ '{{' }} {{ $variable['key'] }} {{ '}}' }}</span>
+                                            <span class="font-mono text-[0.7rem] font-medium text-brand-600 dark:text-brand-400">&#123;&#123; {{ $variable['key'] }} &#125;&#125;</span>
                                             <span class="text-xs text-zinc-400 dark:text-zinc-500">{{ $variable['label'] }}</span>
                                         </div>
                                         <p class="mt-1.5 truncate rounded-md bg-zinc-50 px-2.5 py-1.5 font-mono text-xs text-zinc-600 dark:bg-zinc-950/40 dark:text-zinc-400">

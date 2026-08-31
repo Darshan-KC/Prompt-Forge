@@ -123,7 +123,7 @@
                                     <p class="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{{ $version['note'] }}</p>
                                     <p class="mt-0.5 text-[0.7rem] text-zinc-400 dark:text-zinc-500">{{ $version['author'] }}</p>
                                     <div class="mt-2 flex items-center gap-2">
-                                        <flux:button variant="subtle" size="sm" x-on:click="$dispatch('pf-toast', { icon: 'check-circle', message: 'Restored v{{ $version['number'] }} (mock).' })" :disabled="{{ $version['current'] ?? false ? 'true' : 'false' }}">
+                                        <flux:button variant="subtle" size="sm" x-on:click="$dispatch('pf-toast', { icon: 'check-circle', message: 'Restored v{{ $version['number'] }} (mock).' })" :disabled="$version['current'] ?? false">
                                             Restore
                                         </flux:button>
                                         <flux:link href="{{ route('prompts.compare', $promptData['id']) }}" wire:navigate variant="subtle" size="sm">Compare</flux:link>

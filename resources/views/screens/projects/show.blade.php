@@ -6,6 +6,8 @@
         : [];
     $runs = \App\Support\MockData::runs();
     $lastActivityLabel = $projectData && $projectData['lastActivity'] ? \App\Support\MockData::timeAgo($projectData['lastActivity']) : 'n/a';
+    $projectPromptIds = collect($prompts)->pluck('id')->all();
+    $projectRuns = collect($runs)->filter(fn ($r) => in_array($r['promptId'], $projectPromptIds))->take(6);
 @endphp
 
 <x-app.page-container class="space-y-6">
@@ -60,10 +62,6 @@
                         <flux:link href="{{ route('history.index') }}" wire:navigate variant="subtle" size="sm" icon:trailing="arrow-right">History</flux:link>
                     </header>
                     <div class="border-t border-zinc-100 dark:border-white/5">
-                        @php
-                            $projectPromptIds = collect($prompts)->pluck('id')->all();
-                            $projectRuns = collect($runs)->filter(fn ($r) => in_array($r['promptId'], $projectPromptIds))->take(6);
-                        @endphp
                         @if ($projectRuns->isNotEmpty())
                             @foreach ($projectRuns as $run)
                                 <a href="{{ route('history.show', $run['id']) }}" wire:navigate class="group flex items-center gap-3 border-b border-zinc-100 px-4 py-3 transition last:border-0 hover:bg-zinc-800/[0.02] dark:border-white/5 dark:hover:bg-white/[0.02]">

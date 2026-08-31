@@ -7,6 +7,13 @@
     $user = $dashboard['user'];
     $hour = now()->hour;
     $greeting = $hour < 12 ? 'Good morning' : ($hour < 18 ? 'Good afternoon' : 'Good evening');
+
+    $activityIconMap = [
+        'run' => ['icon' => 'play', 'classes' => 'bg-brand-500/10 text-brand-600 dark:text-brand-400'],
+        'version' => ['icon' => 'rectangle-stack', 'classes' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400'],
+        'favorite' => ['icon' => 'star', 'classes' => 'bg-amber-500/10 text-amber-600 dark:text-amber-400'],
+        'project' => ['icon' => 'folder', 'classes' => 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'],
+    ];
 @endphp
 
 <x-app.page-container class="space-y-6">
@@ -127,16 +134,8 @@
             <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Everything your team ran and changed recently.</p>
         </header>
         <ol class="border-t border-zinc-100 px-5 py-4 lg:px-6 dark:border-white/5">
-            @php
-                $iconMap = [
-                    'run' => ['icon' => 'play', 'classes' => 'bg-brand-500/10 text-brand-600 dark:text-brand-400'],
-                    'version' => ['icon' => 'layers', 'classes' => 'bg-sky-500/10 text-sky-600 dark:text-sky-400'],
-                    'favorite' => ['icon' => 'star', 'classes' => 'bg-amber-500/10 text-amber-600 dark:text-amber-400'],
-                    'project' => ['icon' => 'folder', 'classes' => 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'],
-                ];
-            @endphp
             @foreach ($activity as $i => $entry)
-                @php($meta = $iconMap[$entry['type']] ?? $iconMap['run'])
+                @php($meta = $activityIconMap[$entry['type']] ?? $activityIconMap['run'])
                 <li class="relative flex gap-3.5 pb-6 last:pb-0">
                     @if (! $loop->last)
                         <span class="absolute left-[11px] top-8 h-[calc(100%-1.75rem)] w-px bg-zinc-200 dark:bg-white/10" aria-hidden="true"></span>
