@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $menus = [
         'profile' => ['label' => 'Profile', 'icon' => 'user-circle', 'description' => 'Your personal information'],
@@ -52,3 +53,4 @@
         </div>
     @endif
 </x-app.page-container>
+</x-layouts.app>

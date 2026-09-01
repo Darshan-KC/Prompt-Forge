@@ -19,7 +19,7 @@ class Login extends Component
         }
     }
 
-    public function login(): \Illuminate\Http\RedirectResponse
+    public function login()
     {
         $credentials = $this->validate([
             'email' => ['required', 'email'],

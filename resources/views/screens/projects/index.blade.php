@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $projects = \App\Support\MockData::projects();
     $totalRuns = collect($projects)->sum('runCount');
@@ -53,3 +54,4 @@
         @endforeach
     </div>
 </x-app.page-container>
+</x-layouts.app>

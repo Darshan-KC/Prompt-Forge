@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $promptId = is_numeric($prompt ?? null) ? (int) $prompt : null;
     $promptData = $promptId !== null && $promptId > 0 ? \App\Support\MockData::prompt($promptId) : null;
@@ -134,3 +135,4 @@
         </div>
     @endif
 </x-app.page-container>
+</x-layouts.app>

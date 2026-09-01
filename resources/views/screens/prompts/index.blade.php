@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $prompts = \App\Support\MockData::prompts();
     $categories = \App\Support\MockData::categories();
@@ -111,3 +112,4 @@
         </div>
     </div>
 </x-app.page-container>
+</x-layouts.app>

@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $providers = \App\Support\MockData::providers();
     $categories = \App\Support\MockData::categories();
@@ -277,3 +278,4 @@
         </div>
     </form>
 </x-app.page-container>
+</x-layouts.app>

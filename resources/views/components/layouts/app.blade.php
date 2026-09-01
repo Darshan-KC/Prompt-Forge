@@ -1,3 +1,5 @@
+@props(['title' => null, 'description' => null])
+
 <!DOCTYPE html>
 <html
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
@@ -47,9 +49,7 @@
     </flux:header>
 
     <flux:main class="min-w-0">
-        <x-app.page-container>
-            {{ $slot }}
-        </x-app.page-container>
+        {{ $slot }}
     </flux:main>
 
     <x-app.command-palette />

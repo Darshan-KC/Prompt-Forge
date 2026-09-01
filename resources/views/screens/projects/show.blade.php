@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $projectId = is_numeric($project ?? null) ? (int) $project : null;
     $projectData = $projectId !== null && $projectId > 0 ? \App\Support\MockData::project($projectId) : null;
@@ -100,3 +101,4 @@
         </div>
     @endif
 </x-app.page-container>
+</x-layouts.app>

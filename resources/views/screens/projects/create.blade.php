@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $existing = \App\Support\MockData::projects();
     $colors = ['#ec5d12', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444'];
@@ -61,3 +62,4 @@
         </div>
     </form>
 </x-app.page-container>
+</x-layouts.app>

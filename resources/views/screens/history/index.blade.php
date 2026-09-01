@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $runs = \App\Support\MockData::runs();
     $providers = \App\Support\MockData::providers();
@@ -94,3 +95,4 @@
         </div>
     </div>
 </x-app.page-container>
+</x-layouts.app>

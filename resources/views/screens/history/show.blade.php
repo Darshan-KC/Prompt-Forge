@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $runId = is_numeric($run ?? null) ? (int) $run : null;
     $runData = $runId !== null && $runId > 0 ? \App\Support\MockData::run($runId) : null;
@@ -95,3 +96,4 @@
         </div>
     @endif
 </x-app.page-container>
+</x-layouts.app>

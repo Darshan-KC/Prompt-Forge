@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $analytics = \App\Support\MockData::analytics();
     $period = $analytics['period'];
@@ -201,3 +202,4 @@
         </section>
     </div>
 </x-app.page-container>
+</x-layouts.app>

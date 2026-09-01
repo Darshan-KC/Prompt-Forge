@@ -1,3 +1,4 @@
+<x-layouts.app>
 @php
     $dashboard = \App\Support\MockData::dashboard();
     $stats = $dashboard['stats'];
@@ -163,3 +164,4 @@
         </ol>
     </section>
 </x-app.page-container>
+</x-layouts.app>
