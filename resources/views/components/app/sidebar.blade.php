@@ -23,7 +23,7 @@
     <flux:navlist variant="outline">
         <flux:navlist.item icon="home" href="{{ route('dashboard') }}" wire:navigate @if ($isActive('dashboard')) data-current @endif>Dashboard</flux:navlist.item>
         <flux:navlist.item icon="bolt" href="{{ route('playground') }}" wire:navigate @if ($isActive('playground')) data-current @endif>Playground</flux:navlist.item>
-        <flux:navlist.item icon="squares-2x2" href="{{ route('prompts.index') }}" wire:navigate @if ($isActive('prompts.*') && ! $showFavorites) data-current @endif>Prompts</flux:navlist.item>
+        <flux:navlist.item icon="squares-2x2" href="{{ route('prompts.index') }}" wire:navigate @if (! $showFavorites && $isActive('prompts.*')) data-current @endif>Prompts</flux:navlist.item>
         <flux:navlist.item icon="folder" href="{{ route('projects.index') }}" wire:navigate @if ($isActive('projects.*')) data-current @endif>Projects</flux:navlist.item>
         <flux:navlist.item icon="clock" href="{{ route('history.index') }}" wire:navigate @if ($isActive('history.*')) data-current @endif>History</flux:navlist.item>
         <flux:navlist.item icon="chart-bar" href="{{ route('analytics') }}" wire:navigate @if ($isActive('analytics')) data-current @endif>Analytics</flux:navlist.item>
