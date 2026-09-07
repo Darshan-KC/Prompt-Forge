@@ -25,6 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::view('/playground', 'screens.playground')->name('playground');
     Route::view('/playground/{prompt?}', 'screens.playground')->name('playground.prompt');
 
+    Route::view('/chat', 'screens.chat')->name('chat');
+
     // Prompt library.
     Route::view('/prompts', 'screens.prompts.index')->name('prompts.index');
     Route::view('/prompts/create', 'screens.prompts.create')->name('prompts.create');

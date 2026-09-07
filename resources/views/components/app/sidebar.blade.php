@@ -48,6 +48,15 @@
         </flux:navlist.item>
 
         <flux:navlist.item
+            icon="chat-bubble-left-right"
+            href="{{ route('chat') }}"
+            wire:navigate
+            :data-current="$isActive('chat')"
+        >
+            Chat
+        </flux:navlist.item>
+
+        <flux:navlist.item
             icon="squares-2x2"
             href="{{ route('prompts.index') }}"
             wire:navigate
