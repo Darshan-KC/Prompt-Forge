@@ -39,7 +39,10 @@ class ChatAgent implements Agent, Conversational, HasTools
      */
     public function messages(): iterable
     {
-        return [];
+        // return [];
+        return [
+            Message::system($this->instructions()),
+        ];
     }
 
     /**
