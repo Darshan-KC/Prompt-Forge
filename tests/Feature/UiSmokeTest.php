@@ -23,6 +23,7 @@ class UiSmokeTest extends TestCase
             '/dashboard',
             '/playground',
             '/playground/prompt-1',
+            '/chat',
             '/prompts',
             '/prompts/create',
             '/prompts/prompt-1',

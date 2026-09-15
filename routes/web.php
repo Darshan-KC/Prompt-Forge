@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Chat\Chat;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -7,10 +8,11 @@ use Illuminate\Support\Facades\Route;
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Application routes use Route::view (or controller-based) instead of
-| closures: closure-based routes CANNOT be cached, and `php artisan optimize`
-| (run by the production entrypoint on boot) fails hard on them. Static view
-| routes are cacheable and identical here.
+| Application routes use Route::view, Livewire components (or
+| controller-based) instead of closures: closure-based routes CANNOT be
+| cached, and `php artisan optimize` (run by the production entrypoint on
+| boot) fails hard on them. Static view routes are cacheable and identical
+| here.
 */
 
 // Guest landing page.
@@ -25,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/playground', 'screens.playground')->name('playground');
     Route::view('/playground/{prompt?}', 'screens.playground')->name('playground.prompt');
 
-    Route::view('/chat', 'screens.chat')->name('chat');
+    Route::get('/chat', Chat::class)->name('chat');
 
     // Prompt library.
     Route::view('/prompts', 'screens.prompts.index')->name('prompts.index');
