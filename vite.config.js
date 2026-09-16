@@ -23,6 +23,12 @@ export default defineConfig({
         // Docker: the container binds 0.0.0.0 but browsers must reach Vite
         // through the published host port (see VITE_ORIGIN in compose).
         origin: process.env.VITE_ORIGIN ?? 'http://localhost:5173',
+        // laravel-vite-plugin derives its CORS allow-list from server.origin,
+        // so a fixed origin locks dev assets to a single host and blocks the
+        // Laravel app (served from APP_URL, a different origin) from loading
+        // them. Reflect the requesting origin instead — dev only, matching
+        // Vite's default cross-origin behavior.
+        cors: { origin: true },
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
