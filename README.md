@@ -81,6 +81,7 @@ routes/
 ## Status
 
 This is an early-stage UI prototype. Prompts are currently stored as static mock data (via `App\Support\MockData`). The database schema for the full domain (prompts, versions, variables, runs, projects, providers, models, folders, tags, activities) is implemented as Eloquent models and migrations. The views still read from mock data and are not yet wired to the real repositories/controllers.
+Chat support also
 
 ## License
 
