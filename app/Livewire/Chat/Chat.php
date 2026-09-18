@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Chat;
 
+use App\Ai\Agents\ChatAgent;
 use App\Support\MockData;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -60,6 +61,8 @@ class Chat extends Component
         }
 
         $this->isStreaming = true;
+
+        dd((new ChatAgent())->prompt($text));
 
         $this->messages[] = [
             'id' => 'u-'.uniqid(),
