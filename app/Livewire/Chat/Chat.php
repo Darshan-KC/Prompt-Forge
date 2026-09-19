@@ -62,14 +62,25 @@ class Chat extends Component
 
         $this->isStreaming = true;
 
-        dd((new ChatAgent())->prompt($text));
+        // dd((new ChatAgent())->prompt($text));
+        // $response = (new ChatAgent())->prompt($text, [
+        //     'system' => $this->system,
+        //     'provider' => $this->provider,
+        //     'model' => $this->model,
+        //     'temperature' => $this->temperature,
+        //     'max_tokens' => $this->maxTokens,
+        //     'top_p' => $this->topP,
+        // ]);
 
-        $this->messages[] = [
-            'id' => 'u-'.uniqid(),
-            'role' => 'user',
-            'content' => $text,
-            'timestamp' => now()->toIso8601String(),
-        ];
+        $response = (string) (new ChatAgent())->prompt($text);
+        // dd($response);
+
+        // $this->messages[] = [
+        //     'id' => 'u-'.uniqid(),
+        //     'role' => 'user',
+        //     'content' => $text,
+        //     'timestamp' => now()->toIso8601String(),
+        // ];
 
         $tokensIn = $this->estimateTokens($this->system.' '.$text);
 
@@ -89,7 +100,8 @@ class Chat extends Component
 
         return [
             'id' => $id,
-            'content' => $this->buildResponse($text),
+            // 'content' => $this->buildResponse($text),
+            'content' => $this->buildResponse($response),
             'tokensIn' => $tokensIn,
         ];
     }
