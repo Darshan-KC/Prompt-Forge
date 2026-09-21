@@ -75,12 +75,12 @@ class Chat extends Component
         $response = (string) (new ChatAgent())->prompt($text);
         // dd($response);
 
-        // $this->messages[] = [
-        //     'id' => 'u-'.uniqid(),
-        //     'role' => 'user',
-        //     'content' => $text,
-        //     'timestamp' => now()->toIso8601String(),
-        // ];
+        $this->messages[] = [
+            'id' => 'u-'.uniqid(),
+            'role' => 'user',
+            'content' => $text,
+            'timestamp' => now()->toIso8601String(),
+        ];
 
         $tokensIn = $this->estimateTokens($this->system.' '.$text);
 
