@@ -98,11 +98,11 @@ class Chat extends Component
             'provider' => $this->provider,
         ];
 
-        // dd($this->buildResponse($response));
+        $streamContent = $this->buildResponse((string) $response ?: $text);
+
         return [
             'id' => $id,
-            // 'content' => $this->buildResponse($text),
-            // 'content' => $this->buildResponse($response),
+            'content' => $streamContent,
             'tokensIn' => $tokensIn,
         ];
     }
