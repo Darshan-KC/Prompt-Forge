@@ -48,7 +48,7 @@ class ChatTest extends TestCase
         Livewire::test(Chat::class)
             ->call('send', 'hello there')
             ->assertReturned(fn (mixed $payload) => is_array($payload)
-                && str_contains($payload['content'], 'AI assistant')
+                && trim($payload['content']) !== ''
                 && $payload['tokensIn'] > 0);
     }
 

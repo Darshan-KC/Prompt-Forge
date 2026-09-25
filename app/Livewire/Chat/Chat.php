@@ -98,7 +98,11 @@ class Chat extends Component
             'provider' => $this->provider,
         ];
 
-        $streamContent = $this->buildResponse((string) $response ?: $text);
+        $streamContent = trim((string) $response);
+
+        if ($streamContent === '') {
+            $streamContent = $this->buildResponse($text);
+        }
 
         return [
             'id' => $id,
@@ -180,10 +184,8 @@ class Chat extends Component
     }
 
     /**
-     * Canned, keyword-matched mock responses.
-     *
-     * TODO: Replace with a real [[\App\Ai\Agents\ChatAgent]] prompt so the chat
-     * returns live model output.
+     * Canned, keyword-matched responses used only as a fallback when the model
+     * returns nothing.
      */
     protected function buildResponse(string $userText): string
     {
