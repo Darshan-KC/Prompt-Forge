@@ -6,13 +6,19 @@ document.addEventListener('alpine:init', () => {
         showSystemPrompt: false,
         stream: true,
 
-        // --- Streaming animation ---
+        // --- Request / streaming animation ---
+        isSending: false,
         isStreaming: false,
         _timer: null,
         _streamId: null,
         _fullText: '',
         _tokens: [],
         _position: 0,
+
+        // True from the moment a message is submitted until the stream finishes.
+        isBusy() {
+            return this.isSending || this.isStreaming;
+        },
 
         // --- Rendering ---
         renderMarkdown(text) {
@@ -36,7 +42,12 @@ document.addEventListener('alpine:init', () => {
         // --- Send ---
         send() {
             const text = this.input.trim();
-            if (!text || this.isStreaming) return;
+            if (!text || this.isBusy()) return;
+
+            // Flip the pending flag before the request leaves the browser: generation
+            // is a blocking roundtrip, so this is what keeps the loading state on screen
+            // for the whole wait instead of only during the token animation.
+            this.isSending = true;
 
             this.input = '';
             this.$nextTick(() => {
@@ -45,9 +56,15 @@ document.addEventListener('alpine:init', () => {
                 this.scrollToBottom();
             });
 
-            this.$wire.send(text).then((result) => {
-                if (result) this.startStream(result);
-            });
+            this.$wire
+                .send(text)
+                .then((result) => {
+                    this.isSending = false;
+                    if (result) this.startStream(result);
+                })
+                .catch(() => {
+                    this.isSending = false;
+                });
         },
 
         // --- Streaming animation over the server-persisted placeholder ---
@@ -115,7 +132,7 @@ document.addEventListener('alpine:init', () => {
         },
 
         clearChat() {
-            if (this.isStreaming) return;
+            if (this.isBusy()) return;
             this.$wire.clearChat();
         },
 

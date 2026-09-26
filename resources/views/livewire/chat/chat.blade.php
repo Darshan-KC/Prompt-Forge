@@ -20,7 +20,7 @@
                 <flux:icon.adjustments-horizontal class="size-3.5" />
                 <span class="hidden sm:inline" x-text="showConfig ? 'Hide config' : 'Show config'"></span>
             </button>
-            <button type="button" @click="clearChat()" :disabled="isStreaming || {{ count($messages) }} === 0"
+            <button type="button" @click="clearChat()" :disabled="isBusy() || {{ count($messages) }} === 0"
                 class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-40 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200">
                 <flux:icon.trash class="size-3.5" />
                 <span class="hidden sm:inline">Clear</span>
@@ -37,7 +37,8 @@
             {{-- Messages --}}
             <div x-ref="thread" class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                 @if (count($messages) === 0)
-                    <div class="flex flex-col items-center justify-center gap-4 py-20 text-center">
+                    <div x-show="! isSending"
+                        class="flex flex-col items-center justify-center gap-4 py-20 text-center">
                         <div
                             class="grid size-14 place-items-center rounded-2xl bg-zinc-100 text-zinc-400 dark:bg-white/5 dark:text-zinc-500">
                             <flux:icon.chat-bubble-left-right class="size-6" />
@@ -135,6 +136,29 @@
                         @endforeach
                     </div>
                 @endif
+
+                {{-- Pending turn: covers the blocking generation request before the stream starts --}}
+                <div x-cloak x-show="isSending" class="mx-auto max-w-3xl">
+                    <div class="mt-6 flex justify-start">
+                        <div class="max-w-[85%]">
+                            <div class="flex items-start gap-3">
+                                <div
+                                    class="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-900 text-[0.6rem] font-bold text-white dark:bg-zinc-700">
+                                    AI
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div
+                                        class="flex w-fit items-center gap-1.5 rounded-2xl rounded-tl-md border border-zinc-200 bg-white px-4 py-3.5 shadow-xs dark:border-white/10 dark:bg-zinc-900/60">
+                                        <template x-for="(delay, index) in [0, 150, 300]" :key="index">
+                                            <span class="size-1.5 animate-bounce rounded-full bg-zinc-400 dark:bg-zinc-500"
+                                                :style="`animation-delay: ${delay}ms`"></span>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Input area --}}
@@ -144,7 +168,7 @@
                     <div
                         class="flex items-end gap-3 rounded-2xl border border-zinc-200 bg-white p-2 shadow-sm transition focus-within:border-brand-500/50 focus-within:ring-2 focus-within:ring-brand-500/20 dark:border-white/10 dark:bg-zinc-900/60 dark:focus-within:border-brand-400/50 dark:focus-within:ring-brand-400/20">
                         <textarea x-ref="chatInput" x-model="input" @keydown="handleKeydown($event)" @input="autoResize($event)"
-                            rows="1" placeholder="Type a message... (Shift+Enter for newline)" :disabled="isStreaming"
+                            rows="1" placeholder="Type a message... (Shift+Enter for newline)" :disabled="isBusy()"
                             class="max-h-[200px] min-h-[40px] flex-1 resize-none border-0 bg-transparent px-2 py-2 text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 focus:outline-none disabled:opacity-50 dark:text-zinc-100 dark:placeholder:text-zinc-500"></textarea>
 
                         <div class="flex items-center gap-1.5">
@@ -156,8 +180,20 @@
                                 </button>
                             </template>
 
+                            {{-- Waiting for the first token --}}
+                            <template x-if="isSending">
+                                <button type="button" disabled
+                                    class="inline-flex size-9 items-center justify-center rounded-xl bg-zinc-200 text-zinc-500 dark:bg-white/10 dark:text-zinc-400">
+                                    <svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                                    </svg>
+                                </button>
+                            </template>
+
                             {{-- Send button --}}
-                            <template x-if="!isStreaming">
+                            <template x-if="!isBusy()">
                                 <button type="button" @click="send()" :disabled="!input.trim()"
                                     class="inline-flex size-9 items-center justify-center rounded-xl bg-brand-600 text-white shadow-sm transition hover:bg-brand-700 disabled:opacity-30 disabled:hover:bg-brand-600 dark:bg-brand-500 dark:hover:bg-brand-600">
                                     <flux:icon.paper-airplane class="size-4" />
@@ -176,10 +212,10 @@
                                 class="rounded border border-zinc-200 bg-white px-1 py-0.5 font-mono text-[0.6rem] dark:border-white/10 dark:bg-white/5">Shift+Enter</kbd>
                             for newline
                         </span>
-                        <span x-show="isStreaming"
+                        <span x-show="isBusy()"
                             class="flex items-center gap-1.5 text-brand-500 dark:text-brand-400">
                             <span class="size-1.5 animate-pulse rounded-full bg-brand-500"></span>
-                            Streaming...
+                            <span x-text="isStreaming ? 'Streaming...' : 'Thinking...'"></span>
                         </span>
                     </div>
                 </div>
@@ -222,7 +258,7 @@
                     <div class="space-y-1.5">
                         @foreach ($providers as $p)
                             <button type="button" wire:click="selectProvider('{{ $p['slug'] }}')"
-                                :disabled="isStreaming"
+                                :disabled="isBusy()"
                                 @class([
                                     'flex w-full items-center gap-2.5 rounded-lg border px-3 py-2 text-left text-sm transition disabled:cursor-not-allowed disabled:opacity-60',
                                     'border-brand-500/50 bg-brand-500/5 ring-1 ring-brand-500/20' => $provider === $p['slug'],
@@ -242,7 +278,7 @@
                 {{-- Model --}}
                 <div>
                     <label class="mb-2 block text-xs font-medium text-zinc-400">Model</label>
-                    <select wire:model.live="model" :disabled="isStreaming"
+                    <select wire:model.live="model" :disabled="isBusy()"
                         class="block w-full cursor-pointer rounded-lg border-0 bg-zinc-50 px-3 py-2.5 font-mono text-sm text-zinc-800 ring-1 ring-inset ring-zinc-200 transition focus:ring-2 focus:ring-brand-500/60 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-950/40 dark:text-zinc-200 dark:ring-white/10">
                         @foreach ($models as $m)
                             <option value="{{ $m['slug'] }}">{{ $m['name'] }}</option>
@@ -273,7 +309,7 @@
                             <span class="font-mono text-xs tabular-nums text-zinc-600 dark:text-zinc-300">{{ number_format($temperature, 2) }}</span>
                         </div>
                         <input type="range" min="0" max="2" step="0.05" wire:model="temperature"
-                            :disabled="isStreaming"
+                            :disabled="isBusy()"
                             class="mt-2 w-full cursor-pointer accent-brand-600 disabled:opacity-60" />
                     </div>
 
@@ -283,14 +319,14 @@
                             <span class="font-mono text-xs tabular-nums text-zinc-600 dark:text-zinc-300">{{ number_format($topP, 2) }}</span>
                         </div>
                         <input type="range" min="0" max="1" step="0.05" wire:model="topP"
-                            :disabled="isStreaming"
+                            :disabled="isBusy()"
                             class="mt-2 w-full cursor-pointer accent-brand-600 disabled:opacity-60" />
                     </div>
 
                     <div>
                         <label class="text-xs font-medium text-zinc-400">Max tokens</label>
                         <input type="number" min="0" step="256" wire:model="maxTokens"
-                            :disabled="isStreaming"
+                            :disabled="isBusy()"
                             class="mt-2 block w-full rounded-lg border-0 bg-zinc-50 px-3 py-2 font-mono text-sm text-zinc-800 ring-1 ring-inset ring-zinc-200 transition focus:ring-2 focus:ring-brand-500/60 disabled:opacity-60 dark:bg-zinc-950/40 dark:text-zinc-200 dark:ring-white/10" />
                     </div>
 
@@ -301,7 +337,7 @@
                                 generated.</p>
                         </div>
                         <button type="button" role="switch" @click="stream = !stream"
-                            :disabled="isStreaming" :aria-checked="stream"
+                            :disabled="isBusy()" :aria-checked="stream"
                             class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition disabled:opacity-60"
                             :class="stream ? 'bg-brand-600' : 'bg-zinc-300 dark:bg-white/15'">
                             <span class="inline-block size-3.5 rounded-full bg-white shadow transition"
