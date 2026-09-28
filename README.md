@@ -133,4 +133,7 @@ The UI is feature-complete but **still mock-backed**. This is what exists and wh
 
 ## License
 
-MIT
+MIT 
+
+## Contribution
+
