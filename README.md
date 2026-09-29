@@ -136,4 +136,4 @@ The UI is feature-complete but **still mock-backed**. This is what exists and wh
 MIT 
 
 ## Contribution
-
+Contributions are welcome! Please fork the repository and submit a pull request. For major changes, please open an issue first to discuss what you would like to change.
