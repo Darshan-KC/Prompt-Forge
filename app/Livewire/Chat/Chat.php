@@ -72,7 +72,11 @@ class Chat extends Component
         //     'top_p' => $this->topP,
         // ]);
 
-        $response = (string) (new ChatAgent())->prompt($text);
+        try {
+            $response = (string) (new ChatAgent())->prompt($text);
+        } catch (\Throwable) {
+            $response = '';
+        }
         // dd($response);
 
         $this->messages[] = [
